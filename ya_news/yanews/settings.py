@@ -79,4 +79,4 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_URL = reverse_lazy('users:login')
 LOGIN_REDIRECT_URL = reverse_lazy('news:home')
 
-news_count = 10
+NEWS_COUNT_ON_HOME_PAGE = 10

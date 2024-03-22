@@ -2,7 +2,7 @@ import pytest
 
 from django.utils import timezone
 
-from yanews.settings import news_count
+from yanews.settings import NEWS_COUNT_ON_HOME_PAGE
 # Импортируем модель новости и коммента, чтобы создать экземпляры.
 from news.models import News, Comment
 
@@ -57,7 +57,7 @@ def comment(news, author):
 def news_list():
     today = datetime.today()
     all_news = []
-    for index in range(news_count + 1):
+    for index in range(NEWS_COUNT_ON_HOME_PAGE + 1):
         news = News(
             title=f'Title {index}',
             text='Just a text.',

@@ -1,6 +1,6 @@
 import pytest
 
-from yanews.settings import news_count
+from yanews.settings import NEWS_COUNT_ON_HOME_PAGE
 
 from django.urls import reverse
 
@@ -10,7 +10,7 @@ def test_news_list_for_different_users(client, news_list):
     url = reverse('news:home')
     response = client.get(url)
     object_list = response.context['object_list']
-    assert len(object_list) == news_count
+    assert len(object_list) == NEWS_COUNT_ON_HOME_PAGE
 
 
 @pytest.mark.django_db
