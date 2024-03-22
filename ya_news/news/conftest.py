@@ -2,7 +2,7 @@ import pytest
 
 from django.utils import timezone
 
-from yanews.settings import NEWS_COUNT_ON_HOME_PAGE as news_count
+from yanews.settings import news_count
 # Импортируем модель новости и коммента, чтобы создать экземпляры.
 from news.models import News, Comment
 
