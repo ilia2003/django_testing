@@ -1,107 +1,101 @@
 from http import HTTPStatus
 
 import pytest
-
-from pytest_django.asserts import assertFormError, assertRedirects
-
+from pytest_django.asserts import assertRedirects, assertFormError
 from django.urls import reverse
 
 from news.models import Comment
+from news.forms import WARNING
 
-from news.forms import BAD_WORDS, WARNING
+LOGIN_URL = reverse('users:login')
 
 
 @pytest.mark.django_db
-def test_anonymous_user_cant_create_comment(client, form_data, news):
-    url = reverse('news:detail', args=(news.pk,))
-    # Через анонимный клиент пытаемся создать заметку:
-    response = client.post(url, data=form_data)
-    login_url = reverse('users:login')
-    expected_url = f'{login_url}?next={url}'
-    # Проверяем, что произошла переадресация на страницу логина:
+def test_anonymous_user_cant_create_comment(client, form_data,
+                                            news_detail_url):
+    """Анонимный пользователь не может отправить комментарий."""
+    comment_count = Comment.objects.count()
+    assert comment_count == 0
+    response = client.post(news_detail_url, data=form_data)
+    expected_url = f'{LOGIN_URL}?next={news_detail_url}'
     assertRedirects(response, expected_url)
-    # Считаем количество заметок в БД, ожидаем 0 заметок.
     assert Comment.objects.count() == 0
 
 
-@pytest.mark.django_db
-def test_authorised_user_can_create_comment(author_client, form_data, news):
-    url = reverse('news:detail', args=(news.pk,))
-    # Через авторизованный клиент пытаемся создать заметку:
-    response = author_client.post(url, data=form_data)
-    expected_url = f'{url}#comments'
-    # # Проверяем, что произошла переадресация на страницу поста
-    assertRedirects(response, expected_url)
+def test_user_cant_create_comment(author_client, news_detail_url, form_data):
+    """Авторизованный пользователь может отправить комментарий."""
+    response = author_client.post(news_detail_url, data=form_data)
+    assertRedirects(response, f'{news_detail_url}#comments')
     assert Comment.objects.count() == 1
+    new_comment = Comment.objects.get()
+    assert new_comment.text == form_data['text']
 
 
-@pytest.mark.django_db
-# В параметрах вызвана фикстура comment: значит, в БД создан коммент.
-def test_author_can_edit_comment(author_client, form_data, news, comment):
-    # Получаем адрес страницы редактирования коммента:
-    url = reverse('news:edit', args=(comment.pk,))
-    succes_url = reverse('news:detail', args=(news.pk,))
-    # В POST-запросе на адрес редактирования коммента
-    # отправляем form_data - новые значения для полей коммента:
-    response = author_client.post(url, form_data)
-    expected_url = f'{succes_url}#comments'
-    # Проверяем редирект:
-    assertRedirects(response, expected_url)
+def test_user_cant_use_bad_words(author_client,
+                                 bad_words_data,
+                                 news_detail_url):
+    """Если комментарий содержит запрещённые слова, он не будет опубликован,
+    а форма вернёт ошибку.
+    """
+    comment_bad_words = Comment.objects.count()
+    assert comment_bad_words == 0
+    response = author_client.post(news_detail_url,
+                                  data=bad_words_data)
+    assertFormError(
+        response,
+        form='form',
+        field='text',
+        errors=WARNING
+    )
+    assert Comment.objects.count() == 0
+
+
+def test_author_can_edit_comment(author_client,
+                                 comment, form_data,
+                                 news_edit_url,
+                                 news_detail_url):
+    """Авторизованный пользователь может редактировать свои комментарии."""
+    response = author_client.post(news_edit_url, form_data)
+    assertRedirects(response, f'{news_detail_url}#comments')
     comment.refresh_from_db()
     assert comment.text == form_data['text']
+    assert comment.author == comment.author
+    assert comment.news == comment.news
 
 
 @pytest.mark.django_db
-def test_author_can_delete_comment(author_client, news, comment):
-    # Получаем адрес страницы удаления коммента:
-    url = reverse('news:delete', args=(comment.pk,))
-    succes_url = reverse('news:detail', args=(news.pk,))
-    # В POST-запросе на адрес удаляем коммент с comment.pk
-    response = author_client.post(url)
-    expected_url = f'{succes_url}#comments'
-    # Проверяем редирект:
-    assertRedirects(response, expected_url)
-    # Проверяем, что база пуста:
+def test_user_cant_edit_comment_of_another_user(admin_client,
+                                                news_edit_url,
+                                                form_data,
+                                                comment):
+    """Авторизованный пользователь не может редактировать чужие комментарии."""
+    response = admin_client.post(news_edit_url, form_data)
+    assert response.status_code == HTTPStatus.NOT_FOUND
+    comment_from_db = Comment.objects.get(id=comment.id)
+    assert comment.text == comment_from_db.text
+    assert comment.author == comment.author
+    assert comment.news == comment.news
+
+
+def test_author_can_detele_comment(author_client,
+                                   comment,
+                                   news_delete_url,
+                                   news_detail_url):
+    """Авторизованный пользователь может удалять свои комментарии."""
+    comments_count = Comment.objects.count()
+    assert comments_count == 1
+    response = author_client.post(news_delete_url)
+    assertRedirects(response, f'{news_detail_url}#comments')
     assert Comment.objects.count() == 0
 
 
 @pytest.mark.django_db
-def test_user_cant_use_bad_words(author_client, news):
-    # Формируем словарь с запрещёнкой:
-    bad_words_data = {'text': f'Smth text and {BAD_WORDS[0]}'}
-    url = reverse('news:detail', args=(news.pk,))
-    # Пытаемся создать коммент со стоп-словами:
-    response = author_client.post(url, data=bad_words_data)
-    # Проверяем, что форма выдала ошибку:
-    assertFormError(response,
-                    form='form',
-                    field='text',
-                    errors=WARNING)
-    # Проверяем, что база пуста:
-    assert Comment.objects.count() == 0
-
-
-@pytest.mark.django_db
-def test_user_cant_edit_comment_of_another_user(reader_client,
-                                                news, comment, form_data):
-    url = reverse('news:edit', args=(comment.pk,))
-    comment_text = comment.text
-    response = reader_client.post(url, data=form_data)
-    # Проверяем, что вернулась 404 ошибка.
+def test_user_cant_delete_comment_of_another_user(admin_client,
+                                                  news_delete_url,
+                                                  form_data,
+                                                  comment):
+    """Авторизованный пользователь не может удалять чужие комментарии."""
+    response = admin_client.post(news_delete_url, form_data)
     assert response.status_code == HTTPStatus.NOT_FOUND
-    # Обновляем объект комментария.
-    comment.refresh_from_db()
-    # Проверяем, что текст остался тем же, что и был.
-    assert comment.text == comment_text
-
-
-@pytest.mark.django_db
-def test_user_cant_delete_comment_of_another_user(reader_client,
-                                                  news, comment, form_data):
-    url = reverse('news:delete', args=(comment.pk,))
-    # Выполняем запрос на удаление от пользователя-читателя.
-    response = reader_client.delete(url)
-    # Проверяем, что вернулась 404 ошибка.
-    assert response.status_code == HTTPStatus.NOT_FOUND
-    # Убедимся, что комментарий по-прежнему на месте.
-    assert Comment.objects.count() == 1
+    comment_from_db = Comment.objects.get(id=comment.id)
+    assert comment.text == comment_from_db.text

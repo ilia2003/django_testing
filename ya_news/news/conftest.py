@@ -1,13 +1,13 @@
 import pytest
 
-from django.utils import timezone
-
-from yanews.settings import NEWS_COUNT_ON_HOME_PAGE
-# Импортируем модель новости и коммента, чтобы создать экземпляры.
-from news.models import News, Comment
-
 from datetime import datetime, timedelta
 
+from django.conf import settings
+from django.utils import timezone
+from django.test.client import Client
+
+from news.models import News, Comment
+# Импортируем модель новости и коммента, чтобы создать экземпляры.
 # Текущая дата.
 today = datetime.today()
 
@@ -23,15 +23,15 @@ def reader(django_user_model):
 
 
 @pytest.fixture
-def reader_client(reader, client):  # Вызываем фикстуру автора и клиента.
-    client.force_login(reader)  # Логиним автора в клиенте.
-    return client
+def reader_client(reader, Client):  # Вызываем фикстуру автора и клиента.
+    Client.force_login(reader)  # Логиним автора в клиенте.
+    return Client
 
 
 @pytest.fixture
-def author_client(author, client):  # Вызываем фикстуру автора и клиента.
-    client.force_login(author)  # Логиним автора в клиенте.
-    return client
+def author_client(author, Client):  # Вызываем фикстуру автора и клиента.
+    Client.force_login(author)  # Логиним автора в клиенте.
+    return Client
 
 
 @pytest.fixture
@@ -81,10 +81,8 @@ def comments_list(news, author):
         comment.created = now + timedelta(days=index)
         # И сохраняем эти изменения.
         comment.save()
-
-
-@pytest.fixture
-def form_data():
-    return {
-        'text': 'New text',
-    }
+# @pytest.fixture
+# def form_data():
+#     return {
+#         'text': 'New text',
+#     }

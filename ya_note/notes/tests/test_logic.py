@@ -1,13 +1,12 @@
+from http import HTTPStatus
+
 from django.contrib.auth import get_user_model
 from django.test import Client, TestCase
 from django.urls import reverse
-
-from http import HTTPStatus
+from pytils.translit import slugify
 
 from notes.forms import WARNING
 from notes.models import Note
-
-from pytils.translit import slugify
 
 
 User = get_user_model()
@@ -40,14 +39,14 @@ class TestLogic(TestCase):
     def test_add_note_anonim(self):
         self.client.post(self.url, data=self.form_data_note)
         count_notes = Note.objects.count()
-        self.assertEqual(count_notes, 1)
+        self.assertEqual(count_notes, 0)
 
     def test_add_note_author(self):
         response = self.author_client.post(self.url, data=self.form_data_note)
         count_notes = Note.objects.count()
         self.assertRedirects(response, self.url_success)
         self.assertEqual(count_notes, 2)
-        new_note = Note.objects.get(id=2)
+        new_note = Note.objects.get(id.alast())
         self.assertEqual(new_note.title, self.form_data_note['title'])
         self.assertEqual(new_note.text, self.form_data_note['text'])
         self.assertEqual(new_note.slug, self.form_data_note['slug'])

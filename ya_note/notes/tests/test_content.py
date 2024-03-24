@@ -6,6 +6,7 @@ from notes.models import Note
 
 
 User = get_user_model()
+LIST_URL = reverse('notes:list')
 
 
 class TestContent(TestCase):
@@ -21,18 +22,16 @@ class TestContent(TestCase):
             author=cls.author,)
 
     def test_note_in_object_list_author(self):
-        url = reverse('notes:list')
         self.client.force_login(self.author)
-        response = self.client.get(url)
+        response = self.client.get(LIST_URL)
         object_list = response.context['object_list']
         self.assertIn(self.note, object_list)
 
     def test_note_in_object_list_another_user(self):
-        url = reverse('notes:list')
         self.client.force_login(self.reader)
-        response = self.client.get(url)
-        object_list = response.context['object_list']
-        self.assertNotIn(self.note, object_list)
+        response = self.client.get(LIST_URL)
+        object = response.context['object_list']
+        self.assertNotIn(self.note, object)
 
     def test_author_has_form(self):
         urls = (
