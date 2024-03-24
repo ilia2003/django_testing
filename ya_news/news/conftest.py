@@ -4,12 +4,13 @@ from datetime import datetime, timedelta
 
 from django.conf import settings
 from django.utils import timezone
-from django.test.client import Client
+from django.test import Client
 
 from news.models import News, Comment
 # Импортируем модель новости и коммента, чтобы создать экземпляры.
 # Текущая дата.
 today = datetime.today()
+client = Client()
 
 
 @pytest.fixture
@@ -23,15 +24,15 @@ def reader(django_user_model):
 
 
 @pytest.fixture
-def reader_client(reader, Client):  # Вызываем фикстуру автора и клиента.
-    Client.force_login(reader)  # Логиним автора в клиенте.
-    return Client
+def reader_client(reader, client):  # Вызываем фикстуру автора и клиента.
+    client.force_login(reader)  # Логиним автора в клиенте.
+    return client
 
 
 @pytest.fixture
-def author_client(author, Client):  # Вызываем фикстуру автора и клиента.
-    Client.force_login(author)  # Логиним автора в клиенте.
-    return Client
+def author_client(author, client):  # Вызываем фикстуру автора и клиента.
+    client.force_login(author)  # Логиним автора в клиенте.
+    return client
 
 
 @pytest.fixture
@@ -57,7 +58,7 @@ def comment(news, author):
 def news_list():
     today = datetime.today()
     all_news = []
-    for index in range(NEWS_COUNT_ON_HOME_PAGE + 1):
+    for index in range(settings.NEWS_COUNT_ON_HOME_PAGE + 1):
         news = News(
             title=f'Title {index}',
             text='Just a text.',
