@@ -4,8 +4,6 @@ from django.urls import reverse
 
 from news.forms import CommentForm
 
-pytestmark = pytest.mark.django_db
-
 
 @pytest.fixture
 def fixtere_reverse():
@@ -13,7 +11,7 @@ def fixtere_reverse():
     return HOME_URL
 
 
-@pytestmark
+@pytest.mark.django_db
 def test_news_count(client, all_news, fixtere_reverse):
     """Количество новостей на главной странице — не более 10."""
     response = client.get(fixtere_reverse)
@@ -22,7 +20,7 @@ def test_news_count(client, all_news, fixtere_reverse):
     assert news_count == settings.NEWS_COUNT_ON_HOME_PAGE
 
 
-@pytestmark
+@pytest.mark.django_db
 def test_news_order(fixtere_reverse, client, all_news):
     """Новости отсортированы от самой свежей к самой старой."""
     response = client.get(fixtere_reverse)
@@ -32,7 +30,7 @@ def test_news_order(fixtere_reverse, client, all_news):
     assert all_dates == sorted_dates
 
 
-@pytestmark
+@pytest.mark.django_db
 def test_comments_order(client, news, slug_for_comment):
     """Комментарии на странице отдельной новости отсортированы
     в хронологическом порядке: старые в начале списка,
@@ -45,7 +43,7 @@ def test_comments_order(client, news, slug_for_comment):
     assert all_comments.created
 
 
-@pytestmark
+@pytest.mark.django_db
 def test_authorized_client_has_form(author_client,
                                     news_detail_url):
     """Авторизированному пользователю доступна форма для отправки
@@ -57,7 +55,7 @@ def test_authorized_client_has_form(author_client,
     assert isinstance(form, CommentForm)
 
 
-@pytestmark
+@pytest.mark.django_db
 def test_anonymous_client_has_no_form(client,
                                       news_detail_url):
     """Неавторизованному пользователю недоступна форма для отправки
