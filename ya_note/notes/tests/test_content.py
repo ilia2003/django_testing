@@ -35,16 +35,16 @@ class TestContent(TestCase):
     def test_note_in_list_for_author(self):
         """Отдельная заметка передаётся на страницу со списком заметок."""
         response = self.author_client.get(self.url_list)
-        object_list = response.context['object_list']
-        self.assertIn(self.note, object_list)
+        object = response.context['object_list']
+        self.assertIn(self.note, object)
 
     def test_note_not_in_list_for_another_user(self):
         """В список заметок одного пользователя не попадают
         заметки другого пользователя.
         """
         response = self.reader_client.get(self.url_list)
-        object_list = response.context['object_list']
-        self.assertNotIn(self.note, object_list)
+        object = response.context['object_list']
+        self.assertNotIn(self.note, object)
 
     def test_create_note_page_contains_form(self):
         """На страницу создания заметки передаются формы."""

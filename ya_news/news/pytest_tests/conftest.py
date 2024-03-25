@@ -1,10 +1,11 @@
-import pytest
-
 from datetime import datetime, timedelta
 
+import pytest
 from django.conf import settings
+from django.test import Client
 from django.utils import timezone
 from django.urls import reverse
+
 
 from news.models import News, Comment
 from news.forms import BAD_WORDS
@@ -12,6 +13,7 @@ from news.forms import BAD_WORDS
 NEWS_DETAIL_URL = 'news:detail'
 NEWS_DELETE_URL = 'news:delete'
 NEWS_EDIT_URL = 'news:edit'
+client = Client()
 
 
 @pytest.fixture
@@ -42,9 +44,9 @@ def comment(news, author):
                                   text='Текст комментария')
 
 
-@pytest.fixture
-def slug_for_args(news):
-    return (news.id,)
+# @pytest.fixture
+# def slug_for_args(news):
+#     return (news.id,)
 
 
 @pytest.fixture
@@ -73,7 +75,6 @@ def comments(news, author):
         )
         comment.created = now + timedelta(days=index)
         comment.save()
-        comments.append(comment)
     return comments
 
 

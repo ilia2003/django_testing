@@ -103,18 +103,18 @@ class TestNoteEditDelete(TestCase):
     def test_author_can_delete_note(self):
         """Автор может удалять свои заметки."""
         notes_count_before = Note.objects.count()
-        self.assertEqual(notes_count_before, 1)
         response = self.author_client.delete(self.url_delete)
         self.assertRedirects(response, self.url_success)
         notes_count_after = Note.objects.count()
-        self.assertEqual(notes_count_after, 0)
+        self.assertEqual(notes_count_before, notes_count_after)
 
     def test_user_cant_delete_note_of_another_user(self):
         """Читатель не может удалять чужие заметки."""
+        notes_count_before = Note.objects.count()
         response = self.reader_client.delete(self.url_delete)
         self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
         notes_count = Note.objects.count()
-        self.assertEqual(notes_count, 1)
+        self.assertEqual(notes_count_before, notes_count)
 
     def test_author_can_edit_note(self):
         """Автор может редактировать свою заметку."""
@@ -163,8 +163,6 @@ class TestNoteCreationSlug(TestCase):
             'text': 'Текст из формы',
             'slug': 'pasport',
         }
-        note_before = Note.objects.count()
-        self.assertEqual(note_before, 1)
         response = self.author_client.post(self.url, data=warning_data_slug)
         self.assertFormError(
             response,

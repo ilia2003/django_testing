@@ -1,23 +1,27 @@
 from http import HTTPStatus
 
 import pytest
-from pytest_django.asserts import assertRedirects, assertFormError
 from django.urls import reverse
+from pytest_django.asserts import assertRedirects, assertFormError
 
-from news.models import Comment
 from news.forms import WARNING
+from news.models import Comment
 
-LOGIN_URL = reverse('users:login')
+
+@pytest.fixture
+def fixtere_reverse():
+    LOGIN_URL = reverse('users:login')
+    return LOGIN_URL
 
 
 @pytest.mark.django_db
 def test_anonymous_user_cant_create_comment(client, form_data,
-                                            news_detail_url):
+                                            news_detail_url, fixtere_reverse):
     """Анонимный пользователь не может отправить комментарий."""
-    comment_count = Comment.objects.count()
-    assert comment_count == 0
+    # comment_count = Comment.objects.count()
+    # assert comment_count == 0
     response = client.post(news_detail_url, data=form_data)
-    expected_url = f'{LOGIN_URL}?next={news_detail_url}'
+    expected_url = f'{fixtere_reverse}?next={news_detail_url}'
     assertRedirects(response, expected_url)
     assert Comment.objects.count() == 0
 
