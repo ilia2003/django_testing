@@ -1,53 +1,52 @@
-### Тестирование проектов YaNote и YaNews
+# Django testing  
+## Если вы успели выполнить все домашние задания — ваш финальный проект готов.
+Перенесите тесты из ваших проектов в данный репозиторий (**django_testing**), который появился в вашем аккаунте.  
+В итоге должна получиться следующая структура репозитория:
 ```
-# YaNews: новостной сайт, где пользователи могут оставлять комментарии к новостям.
-# YaNote: электронная записная книжка для тех, кто не хочет ничего забыть и поэтому всё записывает. 
-```
-# Использованные технологии:
-- Python 3.9
-- Django 3.2
-- Pytest
-- Unittest
-- 
-# Запуск проекта
-1. ### Склонируйте репозиторий:
-```
-git clone https://github.com/romatimon/django_testing
+Dev
+ └── django_testing
+     ├── ya_news
+     │   ├── news
+     │   │   ├── fixtures/
+     │   │   ├── migrations/
+     │   │   ├── pytest_tests/   <- Директория с вашими тестами pytest для проекта ya_news
+     │   │   ├── __init__.py
+     │   │   ├── admin.py
+     │   │   ├── apps.py
+     │   │   ├── forms.py
+     │   │   ├── models.py
+     │   │   ├── urls.py
+     │   │   └── views.py
+     │   ├── templates/
+     │   ├── yanews/
+     │   ├── manage.py
+     │   └── pytest.ini
+     ├── ya_note
+     │   ├── notes
+     │   │   ├── migrations/
+     │   │   ├── tests/          <- Директория с вашими тестами unittest для проекта ya_note
+     │   │   ├── __init__.py
+     │   │   ├── admin.py
+     │   │   ├── apps.py
+     │   │   ├── forms.py
+     │   │   ├── models.py
+     │   │   ├── urls.py
+     │   │   └── views.py
+     │   ├── templates/
+     │   ├── yanote/
+     │   ├── manage.py
+     │   └── pytest.ini
+     ├── .gitignore
+     ├── README.md
+     ├── requirements.txt
+     └── structure_test.py
 ```
 
-2. ### Создайте и активируйте виртуальное окружение:
-Команда для установки виртуального окружения на Mac или Linux:
-```
-python3 -m venv env
-source env/bin/activate
-```
-
-Команда для установки виртуального окружения на Windows:
-```
-python -m venv venv
-source venv/Scripts/activate
+## После копирования тестов, написанных в ходе прохождения спринта, для проверки готовности проекта к сдаче необходимо выполнить 4 действия:
+1. Создать и активировать виртуальное окружение; установить зависимости из файла `requirements.txt`;
+2. Запустить скрипт для `run_tests.sh` из корневой директории проекта:
+```sh
+bash run_tests.sh
 ```
 
-3. ### Установите зависимости:
-```
-pip install -r requirements.txt
-```
-
-## Как запустить тесты
-
-Переходим в директорию ya_news и запускаем Pytest:
-
-```
-cd ya_news
-
-pytest
-```
-
-Переходим в директорию ya_note и запускаем тесты Unittest:
-
-```
-cd ya_note
-
-python manage.py test
-```
-Автор [romatimon](https://github.com/romatimon)
+**Если все проверки успешно выполнились, проект можно отправлять на ревью.**
