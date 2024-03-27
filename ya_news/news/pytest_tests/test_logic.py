@@ -40,7 +40,7 @@ def test_create_comment_by_reader(news_detail_url, news, reader_client,
         reader_client.post(news_detail_url, data=NEW_TEXT_FOR_COMMENTS),
         f'{news_detail_url}#comments'
     )
-    comments = Comment.objects.count() - comments_before
+    comments = comments_before - Comment.objects.count()
     assert len(comments) == 1
     comment = comments.last()
     assert comment.text == NEW_TEXT_FOR_COMMENTS['text']
@@ -51,13 +51,12 @@ def test_create_comment_by_reader(news_detail_url, news, reader_client,
 def test_create_comment_by_anonymous(
         client, news_detail_url, to_news_detail_url_after_login
 ):
-    comments_before = Comment.objects.count() == 0
+    assert Comment.objects.count() == 0
     assertRedirects(
         client.post(news_detail_url, data=NEW_TEXT_FOR_COMMENTS),
         to_news_detail_url_after_login
     )
-    coment = Comment.objects.count() - comments_before
-    assert len(coment) == 1
+    assert Comment.objects.count() == 0
 
 
 @pytest.mark.parametrize(
