@@ -41,7 +41,7 @@ def test_create_comment_by_reader(news_detail_url, news, reader_client,
         f'{news_detail_url}#comments'
     )
     comments = set(Comment.objects.all()) - comments_before
-    assert (comments) == 1
+    assert len(comments) == 1
     comment = comments.pop()
     assert comment.text == NEW_TEXT_FOR_COMMENTS['text']
     assert comment.news == news
