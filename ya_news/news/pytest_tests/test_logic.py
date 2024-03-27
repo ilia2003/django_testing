@@ -35,13 +35,13 @@ def test_delete_comment_by_author(author_client, comment_delete_url):
 
 def test_create_comment_by_reader(news_detail_url, news, reader_client,
                                   reader):
-    comments_before = set(Comment.objects.all())
+    comments_before = Comment.objects.count()
     assertRedirects(
         reader_client.post(news_detail_url, data=NEW_TEXT_FOR_COMMENTS),
         f'{news_detail_url}#comments'
     )
-    comments = set(Comment.objects.all()) - comments_before
-    assert len(comments) == 1
+    comments = Comment.objects.count() - comments_before
+    assert comments == 1
     comment = comments.pop()
     assert comment.text == NEW_TEXT_FOR_COMMENTS['text']
     assert comment.news == news
