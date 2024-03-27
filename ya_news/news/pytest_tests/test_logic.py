@@ -40,9 +40,9 @@ def test_create_comment_by_reader(news_detail_url, news, reader_client,
         reader_client.post(news_detail_url, data=NEW_TEXT_FOR_COMMENTS),
         f'{news_detail_url}#comments'
     )
-    comments = set(Comment.objects.all()) - comments_before
+    comments = Comment.objects.count - comments_before
     assert len(comments) == 1
-    comment = comments.last()
+    comment = comments.pop()
     assert comment.text == NEW_TEXT_FOR_COMMENTS['text']
     assert comment.news == news
     assert comment.author == reader
