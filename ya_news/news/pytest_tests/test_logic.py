@@ -40,8 +40,8 @@ def test_create_comment_by_reader(news_detail_url, news, reader_client,
         reader_client.post(news_detail_url, data=NEW_TEXT_FOR_COMMENTS),
         f'{news_detail_url}#comments'
     )
-    comments = comments_before - Comment.objects.count()
-    assert len(comments) == 1
+    comments = Comment.objects.count() - comments_before
+    assert len(comments) == Comment.objects.count() + 1
     comment = comments.last()
     assert comment.text == NEW_TEXT_FOR_COMMENTS['text']
     assert comment.news == news
