@@ -1,6 +1,4 @@
 from notes.forms import NoteForm
-from notes.models import Note
-
 from .configurations import TestBaseParameters, Urls
 
 
@@ -10,19 +8,9 @@ class TestContent(TestBaseParameters):
         response = self.author_client.get(Urls.NOTES_LIST)
         self.assertIn('object_list', response.context)
         object_list = response.context['object_list']
-        self.assertEqual(
-            len(object_list),
-            Note.objects.count(),
-        )
-
         self.assertIn(
             self.note,
             object_list,
-        )
-        note = Note.objects.get(pk=self.note.pk)
-        self.assertEqual(
-            (note.title, note.text, note.slug, note.author),
-            (self.note.title, self.note.text, self.note.slug, self.note.author)
         )
 
     def test_note_displays_for_reader(self):

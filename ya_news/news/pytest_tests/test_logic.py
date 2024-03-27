@@ -35,14 +35,14 @@ def test_delete_comment_by_author(author_client, comment_delete_url):
 
 def test_create_comment_by_reader(news_detail_url, news, reader_client,
                                   reader):
-    comments_before = set(Comment.objects.all())
+    comments_before = Comment.objects.count()
     assertRedirects(
         reader_client.post(news_detail_url, data=NEW_TEXT_FOR_COMMENTS),
         f'{news_detail_url}#comments'
     )
-    comments = set(Comment.objects.all()) - comments_before
+    comments = Comment.objects.count() - comments_before
     assert len(comments) == 1
-    comment = comments.pop()
+    comment = comments.last()
     assert comment.text == NEW_TEXT_FOR_COMMENTS['text']
     assert comment.news == news
     assert comment.author == reader
@@ -51,12 +51,13 @@ def test_create_comment_by_reader(news_detail_url, news, reader_client,
 def test_create_comment_by_anonymous(
         client, news_detail_url, to_news_detail_url_after_login
 ):
-    assert Comment.objects.count() == 0
+    comments_before = Comment.objects.count() == 0
     assertRedirects(
         client.post(news_detail_url, data=NEW_TEXT_FOR_COMMENTS),
         to_news_detail_url_after_login
     )
-    assert Comment.objects.count() == 0
+    coment = Comment.objects.count() - comments_before
+    assert len(coment) == 1
 
 
 @pytest.mark.parametrize(
@@ -87,7 +88,7 @@ def test_author_can_edit_comment(
 
 
 def test_delete_comment_by_reader(comment, reader_client, comment_delete_url):
-    comments_before = len(Comment.objects.all())
+    comments_before = Comment.objects.count()
     reader_client.post(comment_delete_url)
     assert len(Comment.objects.all()) == comments_before
     comment_after = Comment.objects.get(pk=comment.pk)

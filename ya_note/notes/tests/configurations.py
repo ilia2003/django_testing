@@ -43,7 +43,6 @@ class TestBaseParameters(TestCase):
         cls.reader = User.objects.create(username='Reader')
         cls.reader_client = Client()
         cls.reader_client.force_login(cls.reader)
-        cls.anonymous_client = Client()
         cls.note = Note.objects.create(
             author=cls.author,
             title=Text.NOTE_TITLE,

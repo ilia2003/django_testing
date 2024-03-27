@@ -1,5 +1,4 @@
 import pytest
-
 from django.conf import settings
 from django.test import Client
 from django.urls import reverse
@@ -61,11 +60,6 @@ def bulk_news():
         )
         for index in range(settings.NEWS_COUNT_ON_HOME_PAGE + 1)
     )
-    news_to_update = News.objects.get(pk=11)
-    news_to_update.date = today - timezone.timedelta(
-        days=settings.NEWS_COUNT_ON_HOME_PAGE + 2
-    )
-    news_to_update.save()
 
 
 @pytest.fixture

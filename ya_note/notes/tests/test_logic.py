@@ -4,7 +4,6 @@ from pytils.translit import slugify
 
 from notes.models import Note
 from notes.forms import WARNING
-
 from .configurations import TestBaseParameters, Urls
 
 
@@ -35,7 +34,7 @@ class TestClass(TestBaseParameters):
                 )
 
     def test_anonymous_user_cant_create_note(self):
-        notes_before = set(Note.objects.all())
+        notes_before = Note.objects.count()
         self.assertRedirects(
             self.anonymous_client.post(Urls.NOTE_ADD, data=self.new_note_data),
             Urls.REDIRECT_TO_NOTE_ADD
@@ -45,7 +44,7 @@ class TestClass(TestBaseParameters):
         )
 
     def test_cant_use_slug_again(self):
-        notes_before = set(Note.objects.all())
+        notes_before = Note.objects.count()
         self.new_note_data['slug'] = self.note.slug
         self.assertFormError(
             self.author_client.post(Urls.NOTE_ADD, data=self.new_note_data),
@@ -71,7 +70,7 @@ class TestClass(TestBaseParameters):
         )
 
     def test_author_can_delete_note(self):
-        notes_before = set(Note.objects.all())
+        notes_before = Note.objects.count()
         self.author_client.delete(Urls.NOTE_DELETE)
         self.assertEqual(Note.objects.count(), len(notes_before) - 1)
         self.assertFalse(Note.objects.filter(pk=self.note.pk).exists())

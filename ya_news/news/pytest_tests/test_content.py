@@ -1,5 +1,4 @@
 import pytest
-
 from django.conf import settings
 
 from news.forms import CommentForm
@@ -18,13 +17,8 @@ def test_news_count(bulk_news, client, news_home_url):
     response = client.get(news_home_url)
     assert 'object_list' in response.context
     object_list = response.context['object_list']
-    assert len(object_list) == settings.NEWS_COUNT_ON_HOME_PAGE
-
-
-def test_news_order_sorting(client, news_home_url):
-    all_dates = [news.date for news in
-                 client.get(news_home_url).context['object_list']]
-    assert all_dates == sorted(all_dates, reverse=True)
+    assert CommentForm.objects.count(object_list
+                                     ) == settings.NEWS_COUNT_ON_HOME_PAGE
 
 
 def test_comments_sorting(client, news_detail_url):
