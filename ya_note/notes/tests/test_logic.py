@@ -20,14 +20,14 @@ class TestClass(TestBaseParameters):
         )
         for data, expected_slug in creation_cases:
             with self.subTest(data=data, expected_slug=expected_slug):
-                notes_at_start = Note.objects.count()
+                notes_at_start = set(Note.objects.all())
                 self.assertRedirects(
                     self.author_client.post(Urls.NOTE_ADD, data=data),
                     Urls.NOTES_SUCCESS
                 )
-                note_objects = Note.objects.count() - notes_at_start
+                note_objects = (set(Note.objects.all()) - notes_at_start)
                 self.assertEqual(len(note_objects), 1)
-                note = Note.objects.last()
+                note = note_objects.pop()
                 self.assertEqual(
                     (note.slug, note.title, note.text, note.author),
                     (expected_slug, data['title'], data['text'], self.author)
