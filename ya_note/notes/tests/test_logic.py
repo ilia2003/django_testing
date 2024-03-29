@@ -25,7 +25,8 @@ class TestClass(TestBaseParameters):
                     self.author_client.post(Urls.NOTE_ADD, data=data),
                     Urls.NOTES_SUCCESS
                 )
-                note_objects = (set(Note.objects.all()) - notes_at_start)
+                note_objects = set(Note.objects.all()),
+                set(Note.objects.all()) - notes_at_start
                 self.assertEqual(len(note_objects), 1)
                 note = note_objects.pop()
                 self.assertEqual(
@@ -53,7 +54,7 @@ class TestClass(TestBaseParameters):
             errors=self.new_note_data['slug'] + WARNING
         )
         self.assertEqual(
-            notes_before, set(Note.objects.all())
+            notes_before, Note.objects.count()
         )
 
     def test_author_can_edit(self):
