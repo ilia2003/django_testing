@@ -20,14 +20,14 @@ class TestClass(TestBaseParameters):
         )
         for data, expected_slug in creation_cases:
             with self.subTest(data=data, expected_slug=expected_slug):
-                notes_at_start = set(Note.objects.all())
+                notes_at_start = Note.objects.count()
                 self.assertRedirects(
                     self.author_client.post(Urls.NOTE_ADD, data=data),
                     Urls.NOTES_SUCCESS
                 )
-                note_objects = (set(Note.objects.all()) - notes_at_start)
+                note_objects = Note.objects.count() - notes_at_start
                 self.assertEqual(len(note_objects), 1)
-                note = note_objects.pop()
+                note = Note.objects.last()
                 self.assertEqual(
                     (note.slug, note.title, note.text, note.author),
                     (expected_slug, data['title'], data['text'], self.author)
@@ -36,7 +36,7 @@ class TestClass(TestBaseParameters):
     def test_anonymous_user_cant_create_note(self):
         notes_before = Note.objects.count()
         self.assertRedirects(
-            self.anonymous_client.get(Urls.NOTE_ADD, data=self.new_note_data),
+            self.anonymous_client.post(Urls.NOTE_ADD, data=self.new_note_data),
             Urls.REDIRECT_TO_NOTE_ADD
         )
         self.assertEqual(
