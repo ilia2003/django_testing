@@ -25,10 +25,9 @@ class TestClass(TestBaseParameters):
                     self.author_client.post(Urls.NOTE_ADD, data=data),
                     Urls.NOTES_SUCCESS
                 )
-                note_objects = set(Note.objects.all()),
-                set(Note.objects.all()) - notes_at_start
+                note_objects = (Note.objects.count() - notes_at_start)
                 self.assertEqual(len(note_objects), 1)
-                note = Note.ojects.last()
+                note = note_objects.pop()
                 self.assertEqual(
                     (note.slug, note.title, note.text, note.author),
                     (expected_slug, data['title'], data['text'], self.author)
@@ -54,7 +53,7 @@ class TestClass(TestBaseParameters):
             errors=self.new_note_data['slug'] + WARNING
         )
         self.assertEqual(
-            notes_before, Note.objects.count()
+            notes_before, set(Note.objects.all())
         )
 
     def test_author_can_edit(self):
@@ -73,8 +72,7 @@ class TestClass(TestBaseParameters):
     def test_author_can_delete_note(self):
         notes_before = Note.objects.count()
         self.author_client.delete(Urls.NOTE_DELETE)
-        self.assertEqual(Note.objects.count(),
-                         Note.objects.count(notes_before) - 1)
+        self.assertEqual(Note.objects.count(), len(notes_before) - 1)
         self.assertFalse(Note.objects.filter(pk=self.note.pk).exists())
 
     def test_reader_cant_delete_note(self):
