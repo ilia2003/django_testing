@@ -53,7 +53,7 @@ class TestClass(TestBaseParameters):
             errors=self.new_note_data['slug'] + WARNING
         )
         self.assertEqual(
-            notes_before, Note.objects.count()
+            notes_before, set(Note.objects.all())
         )
 
     def test_author_can_edit(self):
