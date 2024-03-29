@@ -70,8 +70,9 @@ class TestClass(TestBaseParameters):
         )
 
     def test_author_can_delete_note(self):
+        notes_before = Note.objects.count()
         self.author_client.delete(Urls.NOTE_DELETE)
-        self.assertEqual(Note.objects.count(), Note.objects.count() - 1)
+        self.assertEqual(Note.objects.count() - notes_before)
         self.assertFalse(Note.objects.filter(pk=self.note.pk).exists())
 
     def test_reader_cant_delete_note(self):
