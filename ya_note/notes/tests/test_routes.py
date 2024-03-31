@@ -27,11 +27,11 @@ class TestRoutes(TestBaseParameters):
 
     def test_urls_redirect(self):
         testing_urls = (
-            (self.anonymous_client, Urls.NOTE_EDIT,
+            (self.client, Urls.NOTE_EDIT,
              Urls.REDIRECT_TO_NOTE_EDIT),
-            (self.anonymous_client, Urls.NOTE_DETAIL,
+            (self.client, Urls.NOTE_DETAIL,
              Urls.REDIRECT_TO_NOTE_DETAIL),
-            (self.anonymous_client, Urls.NOTE_DELETE,
+            (self.client, Urls.NOTE_DELETE,
              Urls.REDIRECT_TO_NOTE_DELETE),
         )
         for client, urls, redirect_to in testing_urls:

@@ -40,7 +40,7 @@ class TestClass(TestBaseParameters):
             Urls.REDIRECT_TO_NOTE_ADD
         )
         self.assertEqual(
-            notes_before, set(Note.objects.all())
+            notes_before, Note.objects.count()
         )
 
     def test_cant_use_slug_again(self):
