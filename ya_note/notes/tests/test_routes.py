@@ -7,10 +7,10 @@ class TestRoutes(TestBaseParameters):
 
     def test_urls_status_cods(self):
         testing_urls = (
-            (self.anonymous_client, Urls.HOME, HTTPStatus.OK),
-            (self.anonymous_client, Urls.USER_LOGIN, HTTPStatus.OK),
-            (self.anonymous_client, Urls.USER_LOGOUT, HTTPStatus.OK),
-            (self.anonymous_client, Urls.USER_SIGNUP, HTTPStatus.OK),
+            (self.client, Urls.HOME, HTTPStatus.OK),
+            (self.client, Urls.USER_LOGIN, HTTPStatus.OK),
+            (self.client, Urls.USER_LOGOUT, HTTPStatus.OK),
+            (self.client, Urls.USER_SIGNUP, HTTPStatus.OK),
             (self.reader_client, Urls.NOTE_ADD, HTTPStatus.OK),
             (self.reader_client, Urls.NOTES_LIST, HTTPStatus.OK),
             (self.reader_client, Urls.NOTES_SUCCESS, HTTPStatus.OK),

@@ -36,7 +36,7 @@ class TestClass(TestBaseParameters):
     def test_anonymous_user_cant_create_note(self):
         notes_before = Note.objects.count()
         self.assertRedirects(
-            self.anonymous_client.post(Urls.NOTE_ADD, data=self.new_note_data),
+            self.client.post(Urls.NOTE_ADD, data=self.new_note_data),
             Urls.REDIRECT_TO_NOTE_ADD
         )
         self.assertEqual(
