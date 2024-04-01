@@ -2,7 +2,6 @@ import pytest
 from django.conf import settings
 
 from news.forms import CommentForm
-from news.pytest_tests.conftest import URL
 
 pytestmark = pytest.mark.django_db
 
@@ -28,8 +27,6 @@ def test_comments_sorting(client, news_detail_url):
 
 
 def test_form_for_logedin_user(reader_client, news_detail_url):
-    logedin_user = reader_client.get(URL.get)
-    assert ('form' in logedin_user.context)
     assert isinstance(
         reader_client.get(news_detail_url).context.get('form'),
         CommentForm
