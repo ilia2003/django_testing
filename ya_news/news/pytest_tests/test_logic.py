@@ -51,12 +51,13 @@ def test_create_comment_by_reader(news_detail_url, news, reader_client,
 def test_create_comment_by_anonymous(
         client, news_detail_url, to_news_detail_url_after_login
 ):
-    assert Comment.objects.count() == 0
+    comments_before = Comment.objects.count()
+    assert comments_before == 0
     assertRedirects(
         client.post(news_detail_url, data=NEW_TEXT_FOR_COMMENTS),
         to_news_detail_url_after_login
     )
-    assert Comment.objects.count() == 0
+    assert comments_before == Comment.objects.count()
 
 
 @pytest.mark.parametrize(
@@ -64,13 +65,14 @@ def test_create_comment_by_anonymous(
     BAD_WORDS,
 )
 def test_comment_form_refuse_bad_words(news_detail_url, reader_client, word):
-    assert Comment.objects.count() == 0
+    comments_before = Comment.objects.count()
+    assert comments_before == 0
     assertFormError(
         reader_client.post(news_detail_url, data=dict(text=word)),
         'form',
         'text', WARNING
     )
-    assert Comment.objects.count() == 0
+    assert comments_before == Comment.objects.count()
 
 
 def test_author_can_edit_comment(
@@ -89,7 +91,7 @@ def test_author_can_edit_comment(
 def test_delete_comment_by_reader(comment, reader_client, comment_delete_url):
     comments_before = Comment.objects.count()
     reader_client.post(comment_delete_url)
-    assert len(Comment.objects.all()) == comments_before
+    assert Comment.objects.count() == comments_before
     comment_after = Comment.objects.get(pk=comment.pk)
     assert comment_after.text == comment.text
     assert comment_after.news == comment.news

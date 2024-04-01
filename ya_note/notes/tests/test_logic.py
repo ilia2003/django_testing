@@ -28,10 +28,10 @@ class TestClass(TestBaseParameters):
                 note_objects = (set(Note.objects.all()) - notes_at_start)
                 self.assertEqual(len(note_objects), 1)
                 note = note_objects.pop()
-                self.assertEqual(
-                    (note.slug, note.title, note.text, note.author),
-                    (expected_slug, data['title'], data['text'], self.author)
-                )
+                self.assertEqual(note.slug, self.expected_slug)
+                self.assertEqual(note.title, self.data['title'])
+                self.assertEqual(note.text, self.data['text'])
+                self.assertEqual(note.author, self.author)
 
     def test_anonymous_user_cant_create_note(self):
         notes_before = Note.objects.count()
@@ -64,10 +64,10 @@ class TestClass(TestBaseParameters):
             HTTPStatus.NOT_FOUND
         )
         note = Note.objects.get(pk=self.note.pk)
-        self.assertEqual(
-            (note.title, note.text, note.author, note.slug),
-            (self.note.title, self.note.text, self.note.author, self.note.slug)
-        )
+        self.assertEqual(note.title, self.note.title)
+        self.assertEqual(note.text, self.note.text)
+        self.assertEqual(note.author, self.note.author)
+        self.assertEqual(note.slug, self.note.slug)
 
     def test_author_can_delete_note(self):
         notes_before = Note.objects.count()
@@ -79,7 +79,7 @@ class TestClass(TestBaseParameters):
         self.reader_client.delete(Urls.NOTE_DELETE)
         self.assertTrue(Note.objects.filter(pk=self.note.pk).exists())
         note = Note.objects.get(pk=self.note.pk)
-        self.assertEqual(
-            (note.title, note.text, note.author, note.slug),
-            (self.note.title, self.note.text, self.note.author, self.note.slug)
-        )
+        self.assertEqual(note.title, self.note.title)
+        self.assertEqual(note.text, self.note.text)
+        self.assertEqual(note.author, self.note.author)
+        self.assertEqual(note.slug, self.note.slug)
