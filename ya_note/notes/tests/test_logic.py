@@ -27,7 +27,8 @@ class TestClass(TestBaseParameters):
                 )
                 note_objects = (set(Note.objects.all()) - notes_at_start)
                 self.assertEqual(len(note_objects), 1)
-                note = self.get_filtered_note(condition=self.data_for_db['slug'])
+                note = self.get_filtered_note(
+                    condition=self.data_for_db['slug'])
                 self.assertEqual(note.title, self.data_for_db['title'])
                 self.assertEqual(note.text, self.data_for_db['text'])
                 self.assertEqual(note.slug, self.data_for_db['slug'])
