@@ -16,14 +16,14 @@ class TestClass(TestBaseParameters):
     def test_auth_user_can_create_note(self):
         notes_before = Note.objects.count()
         url = reverse('notes:add')
-        response = self.author_client.post(url, data=self.form_data)
+        response = self.author_client.post(url, data=self.data)
         self.assertRedirects(response, reverse('notes:success'))
         notes_after = Note.objects.count()
         self.assertEqual(notes_before, notes_after - 1)
         new_note = Note.objects.last()
-        self.assertEqual(new_note.title, self.form_data['title'])
-        self.assertEqual(new_note.text, self.form_data['text'])
-        self.assertEqual(new_note.slug, self.form_data['slug'])
+        self.assertEqual(new_note.title, self.data['title'])
+        self.assertEqual(new_note.text, self.data['text'])
+        self.assertEqual(new_note.slug, self.data['slug'])
         self.assertEqual(new_note.author, self.author)
 
     def test_anonymous_user_cant_create_note(self):
