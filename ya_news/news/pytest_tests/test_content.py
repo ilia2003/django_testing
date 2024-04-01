@@ -16,7 +16,8 @@ def test_of_news_sorting(bulk_news, client, news_home_url):
 def test_news_count(bulk_news, client, news_home_url):
     response = client.get(news_home_url)
     assert 'object_list' in response.context
-    assert Comment.objects.count == settings.NEWS_COUNT_ON_HOME_PAGE
+    object_list = Comment.objects.count
+    assert object_list == settings.NEWS_COUNT_ON_HOME_PAGE
 
 
 def test_comments_sorting(client, news_detail_url):
