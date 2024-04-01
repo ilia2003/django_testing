@@ -1,6 +1,6 @@
 from http import HTTPStatus
 
-from django.urls import reverse
+from pytils.translit import slugify
 
 from notes.models import Note
 from notes.forms import WARNING
@@ -13,17 +13,25 @@ class TestClass(TestBaseParameters):
     def setUpTestData(cls):
         super().setUpTestData()
 
-    def test_user_can_create_note(self):
-        count = Note.objects.count() + 1
-        response = self.client.post(self.url, data=self.form_data)
-        self.assertRedirects(response, reverse('notes:success'))
-        notes_count = Note.objects.count()
-        self.assertEqual(notes_count, count)
-        note = Note.objects.get()
-        self.assertEqual(note.text, self.NOTE_TEXT)
-        self.assertEqual(note.title, self.NOTE_TITLE)
-        self.assertEqual(note.slug, self.NOTE_SLUG)
-        self.assertEqual(note.author, self.author)
+    def test_created_note_with_and_without_slug(self):
+        creation_cases = (
+            (self.new_note_data, self.new_note_data['slug']),
+            (self.no_slug_note_data, slugify(self.no_slug_note_data['title'])),
+        )
+        for data, expected_slug in creation_cases:
+            with self.subTest(data=data, expected_slug=expected_slug):
+                notes_at_start = set(Note.objects.all())
+                self.assertRedirects(
+                    self.author_client.post(Urls.NOTE_ADD, data=data),
+                    Urls.NOTES_SUCCESS
+                )
+                note_objects = (set(Note.objects.all()) - notes_at_start)
+                self.assertEqual(len(note_objects), 1)
+                note = note_objects.pop()
+                self.assertEqual(
+                    (note.slug, note.title, note.text, note.author),
+                    (expected_slug, data['title'], data['text'], self.author)
+                )
 
     def test_anonymous_user_cant_create_note(self):
         notes_before = Note.objects.count()
