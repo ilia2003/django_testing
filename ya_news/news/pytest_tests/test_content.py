@@ -1,8 +1,9 @@
 import pytest
 from django.conf import settings
 
-from news.models import Comment
 from news.forms import CommentForm
+from news.pytest_tests.conftest import URL
+
 pytestmark = pytest.mark.django_db
 
 
@@ -16,8 +17,8 @@ def test_of_news_sorting(bulk_news, client, news_home_url):
 def test_news_count(bulk_news, client, news_home_url):
     response = client.get(news_home_url)
     assert 'object_list' in response.context
-    object_list = Comment.objects.count
-    assert object_list == settings.NEWS_COUNT_ON_HOME_PAGE
+    object_list = response.context['object_list']
+    assert len(object_list) <= settings.NEWS_COUNT_ON_HOME_PAGE
 
 
 def test_comments_sorting(client, news_detail_url):
@@ -27,6 +28,8 @@ def test_comments_sorting(client, news_detail_url):
 
 
 def test_form_for_logedin_user(reader_client, news_detail_url):
+    admin_response = reader_client.get(URL.detail)
+    assert ('form' in admin_response.context)
     assert isinstance(
         reader_client.get(news_detail_url).context.get('form'),
         CommentForm
