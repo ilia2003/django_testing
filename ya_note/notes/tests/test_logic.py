@@ -22,7 +22,7 @@ class TestClass(TestBaseParameters):
             with self.subTest(data=data, expected_slug=expected_slug):
                 notes_at_start = set(Note.objects.all())
                 self.assertRedirects(
-                    self.author_client.post(Urls.NOTE_ADD, data=self.data),
+                    self.author_client.post(Urls.NOTE_ADD, data=data),
                     Urls.NOTES_SUCCESS
                 )
                 note_objects = (set(Note.objects.all()) - notes_at_start)
