@@ -28,7 +28,7 @@ class TestClass(TestBaseParameters):
                 note_objects = (set(Note.objects.all()) - notes_at_start)
                 self.assertEqual(len(note_objects), 1)
                 note = note_objects.pop()
-                self.assertEqual(note.slug, self.data['slug'])
+                self.assertEqual(note.slug, self.note.slug)
                 self.assertEqual(note.title, self.data['title'])
                 self.assertEqual(note.text, self.data['text'])
                 self.assertEqual(note.author, self.author)
