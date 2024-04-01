@@ -15,7 +15,7 @@ class TestClass(TestBaseParameters):
 
     def test_user_can_create_note(self):
         count = Note.objects.count() + 1
-        response = self.auth_client.post(self.url, data=self.form_data)
+        response = self.client.post(self.url, data=self.form_data)
         self.assertRedirects(response, reverse('notes:success'))
         notes_count = Note.objects.count()
         self.assertEqual(notes_count, count)
