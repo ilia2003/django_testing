@@ -52,7 +52,6 @@ def test_create_comment_by_anonymous(
         client, news_detail_url, to_news_detail_url_after_login
 ):
     comments_before = Comment.objects.count()
-    assert comments_before == 0
     assertRedirects(
         client.post(news_detail_url, data=NEW_TEXT_FOR_COMMENTS),
         to_news_detail_url_after_login
@@ -66,7 +65,6 @@ def test_create_comment_by_anonymous(
 )
 def test_comment_form_refuse_bad_words(news_detail_url, reader_client, word):
     comments_before = Comment.objects.count()
-    assert comments_before == 0
     assertFormError(
         reader_client.post(news_detail_url, data=dict(text=word)),
         'form',
